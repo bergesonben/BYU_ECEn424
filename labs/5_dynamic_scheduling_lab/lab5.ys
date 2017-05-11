@@ -1,0 +1,49 @@
+# BYU ECEn 424
+# This is the file you start with for Lab 5.
+# After making your edits and verifying that it works, this is also
+# the file you submit. Do not change the first or last instructions.
+#
+# Benjamin Bergeson
+# benbball
+
+ .pos 0
+    irmovq Stack,%rsp
+# The 18 instructions you can modify start here
+  divq    %rsp,  %rdi    #1
+  divq    %rsp,  %rdi    #2
+  divq    %rsp,  %rdi    #3
+  divq    %rsp,  %rdi    #4
+  divq    %rsp,  %rdi    #5
+  divq    %rsp,  %rdi    #6
+  divq    %rsp,  %rdi    #7
+  divq    %rsp,  %rdi    #8
+  divq    %rsp,  %rdi    #9
+  divq    %rsp,  %rdi    #10
+  divq    %rsp,  %rdi    #11
+  divq    %rsp,  %rdi    #12
+  divq    %rsp,  %rdi    #13
+  divq    %rsp,  %rdi    #14
+  rmmovq  %rdi, (%rdi)   #15
+  addq    %rdi,  %rdx    #16
+  mrmovq (%rdi), %rdi    #17
+  popq   %rdi		 #18
+
+
+# The 18 instructions you can modify end here
+    halt
+    .pos 0x200
+Stack:
+
+#WAW hazard. Two instructions write to the same register, and the second finishes execution first
+#Functional unit conflict.  Two or more entries in the reservation stations of a given F-unit become
+  #ready on the same cycle, creating a conflict for that F-unit on the next cycle.  (The oldest instruction
+  #will go first.)
+#CDB conflict. Two or more functional units finish execution on the same cycle, creating a conflict for
+  #the CDB. (The instruction from the F-unit with the longest latency will go first.)
+#Load forced to wait for an unknown store buffer address. A load must wait at least one cycle
+  #because the store buffer includes a entry for which the address has not yet been determined
+  #. (Note that this is quite different from waiting for the value in a store buffer entry with a matching address.)
+#Load gets value from store buffer. A load matches on the address in the store buffer and get its return
+  #value from the associated value field of that entry.
+#Loads executing out-of-order. A second load moves past a previously issued load and executes before
+  #the first.

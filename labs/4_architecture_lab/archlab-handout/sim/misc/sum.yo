@@ -1,0 +1,40 @@
+                            | # Benjamin Bergeson
+                            | # benbball
+                            | 
+0x000:                      | .pos 0
+0x000: 30f4c800000000000000 |   irmovq Stack,%rsp
+0x00a: 2045                 |   rrmovq %rsp,%rbp
+0x00c: 30f72000000000000000 |   irmovq ele1,%rdi
+0x016: 805000000000000000   |   call sum_list
+0x01f: 00                   |   halt
+                            | 
+                            | # Sample linked list
+0x020:                      | .align 8
+0x020:                      | ele1:
+0x020: 0a00000000000000     |   .quad 0x00a
+0x028: 3000000000000000     |   .quad ele2
+0x030:                      | ele2:
+0x030: b000000000000000     |   .quad 0x0b0
+0x038: 4000000000000000     |   .quad ele3
+0x040:                      | ele3:
+0x040: 000c000000000000     |   .quad 0xc00
+0x048: 0000000000000000     |   .quad 0
+                            | 
+0x050:                      | sum_list:
+0x050: 30f80800000000000000 |   irmovq  $8,%r8        #Constant 8
+0x05a: 207a                 |   rrmovq  %rdi,%r10     #move ls to r10
+0x05c: 6300                 |   xorq    %rax,%rax     #val = 0
+0x05e: 62aa                 |   andq    %r10,%r10     #check ls is valid
+0x060: 708300000000000000   |   jmp     test
+0x069:                      | loop:
+0x069: 509a0000000000000000 |   mrmovq  (%r10),%r9    #get ls->val
+0x073: 6090                 |   addq    %r9,%rax      #val += ls->val
+0x075: 608a                 |   addq    %r8,%r10      #get ls->next
+0x077: 50aa0000000000000000 |   mrmovq  (%r10),%r10   #ls = ls->next
+0x081: 62aa                 |   andq    %r10,%r10
+0x083:                      | test:
+0x083: 746900000000000000   |   jne     loop          #if ls is valid jump to loop
+0x08c: 90                   |   ret
+                            | 
+0x0c8:                      | .pos 200
+0x0c8:                      | Stack:

@@ -1,0 +1,112 @@
+#######################################################################
+# Test for copying block of size 4;
+#######################################################################
+	.pos 0
+main:	irmovq Stack, %rsp  	# Set up stack pointer
+
+	# Set up arguments for copy function and then invoke it
+	irmovq $4, %rdx		# src and dst have 4 elements
+	irmovq dest, %rsi	# dst array
+	irmovq src, %rdi	# src array
+	call ncopy		 
+	halt			# should halt with num nonzeros in %rax
+StartFun:
+# Benjamin Bergeson
+# benbball
+
+# 1. Moved constants 8 and 1 into separate registers so they don't have to be moved into r10 every loop.
+# 2. Moved order of instructions so the registers don't have to wait for values to be valid.
+# 3. Changed the initial check in the loop header to conditional jump to the Loop, which should be the default in almost all cases.
+# 4. Moved the incrementing of src an dst to a separte part that will not execute on the the last loop.
+
+#/* $begin ncopy-ys */
+##################################################################
+# ncopy.ys - Copy a src block of len words to dst.
+# Return the number of positive words (>0) contained in src.
+#
+# Include your name and ID here.
+#
+# Describe how and why you modified the baseline code.
+#
+##################################################################
+# Do not modify this portion
+# Function prologue.
+# %rdi = src, %rsi = dst, %rdx = len
+ncopy:
+
+##################################################################
+# You can modify this portion
+# Loop header
+  andq    %rdx,%rdx		# len <= 0?
+  mrmovq  (%rdi), %r10	# read val from src...
+  irmovq  $0,%rax
+  jg      Loop
+	jmp     Done		    # if so, goto Done:
+Inc:
+  iaddq   $8, %rsi		  # dst++
+  iaddq   $8, %rdi		  # src++
+  andq    %r10, %r10		# val <= 0?
+  mrmovq  (%rdi), %r10	# read val from src...
+	jle     Loop		      # if so, goto Npos:
+  iaddq   $1, %rax		  # count++
+Loop:
+  rmmovq  %r10, (%rsi)	# ...and store it to dst
+  iaddq   $-1, %rdx		  # len--
+	andq    %rdx,%rdx		  # len > 0?
+	jg      Inc			      # if so, goto Inc:
+  andq    %r10, %r10		# val <= 0?
+  jle     Done		      # if so, goto Npos:
+  iaddq   $1, %rax		  # count++
+##################################################################
+# Do not modify the following section of code
+# Function epilogue.
+Done:
+	ret
+##################################################################
+# Keep the following label at the end of your function
+End:
+#/* $end ncopy-ys */
+EndFun:
+
+###############################
+# Source and destination blocks 
+###############################
+	.align 8
+src:
+	.quad -1
+	.quad 2
+	.quad 3
+	.quad -4
+	.quad 0xbcdefa # This shouldn't get moved
+
+	.align 16
+Predest:
+	.quad 0xbcdefa
+dest:
+	.quad 0xcdefab
+	.quad 0xcdefab
+	.quad 0xcdefab
+	.quad 0xcdefab
+Postdest:
+	.quad 0xdefabc
+
+.align 8
+# Run time stack
+	.quad 0
+	.quad 0
+	.quad 0
+	.quad 0
+	.quad 0
+	.quad 0
+	.quad 0
+	.quad 0
+	.quad 0
+	.quad 0
+	.quad 0
+	.quad 0
+	.quad 0
+	.quad 0
+	.quad 0
+	.quad 0
+
+Stack:

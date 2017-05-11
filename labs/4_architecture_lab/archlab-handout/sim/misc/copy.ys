@@ -1,0 +1,53 @@
+#Benjamin Bergeson
+#benbball
+
+.pos 0
+  irmovq Stack,%rsp
+  rrmovq %rsp,%rbp
+  irmovq $8,%r8
+  irmovq $1,%r14
+  irmovq src,%rdi
+  irmovq dest,%rsi
+  irmovq $3,%rdx
+  call copy_block
+  halt
+
+.align 8
+# Source block
+src:
+  .quad 0x00a
+  .quad 0x0b0
+  .quad 0xc00
+# Destination block
+dest:
+  .quad 0x111
+  .quad 0x222
+  .quad 0x333
+
+copy_block:
+  pushq   %rbx
+  pushq   %r10
+  pushq   %r9
+  xorq    %rax,%rax   #set result = 0
+  rrmovq  %rdx,%rbx   #mov len to rbx
+  jmp     test
+loop:
+  mrmovq  (%rdi),%r10 #move *src into r10(val)
+  addq    %r8,%rdi    #src++
+  rmmovq  %r10,(%rsi) #*dest = val
+  addq    %r8,%rsi    #dest++
+  xorq    %r10,%rax   #result ^= val
+  subq    %r14,%rbx   #len--
+test:
+  andq    %rbx,%rbx   #test if len = 0
+  jne     loop        #if len == 0, return
+done:
+  popq    %r9
+  popq    %r10
+  popq    %rbx
+  ret
+
+
+
+.pos 400
+Stack:

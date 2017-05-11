@@ -1,0 +1,87 @@
+1.A.
+      // The first ! converts x to 0 if it is anything but 0, then the second
+        ! converts it back to 1.
+      int any_bit_one(int x) { return !!x; }
+
+      any_bit_one(0x00000000) = 0
+      any_bit_one(0x00000001) = 1
+      any_bit_one(0x00000036) = 1
+      any_bit_one(0x000001f2) = 1
+
+    B. // If there are any 0s in x, when it is xored with all 1s, it will be
+          nonzero. This added with 1 will return 1;
+      int any_bit_zero(int x) { return (x ^ -1) && 1; }
+
+      any_bit_zero(0xffffffff) = 0
+      any_bit_zero(0x00000001) = 1
+      any_bit_zero(0x00000000) = 1
+
+    C. // If x bitwise anded with 0xff is anything but 0, that means that there
+          is at least one bit that is 1.
+      int lsb_one(int x) { return (x & 255) && 1; }
+
+      lsb_one(0x00000000) = 0
+      lsb_one(0x00000001) = 1
+      lsb_one(0x000000ff) = 1
+      lsb_one(0x00000100) = 0
+
+    D.
+    int msb_zero(int x) {
+      int shift_val = (sizeof(int) - 1) << 3;
+      int xright = x >> shift_val;
+      int newX = xright & 0xFF;  // gets the msb to the lsb position
+      return (newX ^ 0xFF) && 1; // does the same thing as checkForZero
+    }
+
+    msb_zero(0x00000000) = 1
+    msb_zero(0x00000001) = 1
+    msb_zero(0xffffffff) = 0
+    msb_zero(0x0000002e) = 1
+
+2.A. It is not sign extended.
+  B. return (((int)word << ((3 - bytenum) << 3)) >> 24);
+
+    Packed value (x) = 0x1234abff, value returned by myxbyte(x,0) = 0xffffffff
+    Packed value (x) = 0x1234abff, value returned by myxbyte(x,1) = 0xffffffab
+    Packed value (x) = 0x1234abff, value returned by myxbyte(x,2) = 0x34
+    Packed value (x) = 0x1234abff, value returned by myxbyte(x,3) = 0x12
+
+3.A. size_t is an unsigned. If there is an unsigned in an operation, all the
+    signed are converted to unsigned as well. So even if maxbytes is smaller,
+    when it is subtracted, it will just be a really large position number.
+  B. if (maxbytes > sizeof(val))
+
+    iteration 0
+    y: 67 45 23 01 00 00
+    iteration 1
+    y: 00 67 45 23 01 00
+    iteration 2
+    y: 00 00 00 00 00 00
+    iteration 3
+    y: 00 00 00 00 00 00
+    iteration 4
+    y: 00 00 00 00 00 00
+    iteration 5
+    y: 00 00 00 00 00 00
+
+4.A. result1 = (x << 4) + x;
+  B. result1 = x - (x << 3);
+  C. result1 = (x << 6) - (x << 2);
+  D. result1 = (x << 4) - (x << 7);
+5.A. Not always true because if x = INT_MIN and y = INT_MIN + 1
+  B. Always true.
+  C. Always true .
+  D. Always true.
+  E. Always true because of the the principles of multiplication and division of
+    two's compliment by power of two.
+6.A. It should never terminate.
+  B. It does not do what I expect; it terminates.
+  C. 16777216. There are not enough bits in the mantissa to represent 16777217
+    in the floating point form of a number multiplied by 2 to some power.
+  D. It would take significantly longer. There are 53 bits to represent the mantissa 
+	compared to the 24 in the float. 
+  E. Integer types would wrap around so the loop would never end. The reason float 
+	and doubles are different is because they have a segment of bits that is used 
+	to express the decimal number to a certain precision. There comes a point where
+	there just isn't enough bits to represent the decimal number with enough 
+	precision so it rounds down. 

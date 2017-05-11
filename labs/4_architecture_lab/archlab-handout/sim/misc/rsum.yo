@@ -1,0 +1,45 @@
+                            | #Benjamin Bergeson
+                            | #benbball
+                            | 
+0x000:                      | .pos 0
+0x000: 30f49001000000000000 |   irmovq Stack,%rsp
+0x00a: 2045                 |   rrmovq %rsp,%rbp
+0x00c: 30f80800000000000000 |   irmovq  $8,%r8      #Constant 8
+0x016: 30f73000000000000000 |   irmovq ele1,%rdi
+0x020: 806000000000000000   |   call rsum_list
+0x029: 00                   |   halt
+                            | 
+                            | # Sample linked list
+0x030:                      | .align 8
+0x030:                      | ele1:
+0x030: 0a00000000000000     |   .quad 0x00a
+0x038: 4000000000000000     |   .quad ele2
+0x040:                      | ele2:
+0x040: b000000000000000     |   .quad 0x0b0
+0x048: 5000000000000000     |   .quad ele3
+0x050:                      | ele3:
+0x050: 000c000000000000     |   .quad 0xc00
+0x058: 0000000000000000     |   .quad 0
+                            | 
+0x060:                      | rsum_list:
+0x060: a03f                 |   pushq   %rbx
+0x062: a09f                 |   pushq   %r9
+0x064: 2073                 |   rrmovq  %rdi,%rbx   #move ls to rbx
+0x066: 6300                 |   xorq    %rax,%rax   #val = 0
+0x068: 2079                 |   rrmovq  %rdi,%r9
+0x06a: 6299                 |   andq    %r9,%r9     #check ls is valid
+0x06c: 739600000000000000   |   je      done        #if ls is not valid
+0x075: 6089                 |   addq    %r8,%r9    #rdi gets the address of ls->next
+0x077: 50790000000000000000 |   mrmovq  (%r9),%rdi #rdi gets the value of ls->next
+0x081: 806000000000000000   |   call    rsum_list
+0x08a: 50930000000000000000 |   mrmovq  (%rbx),%r9  #r9 gets the value of ls->val
+0x094: 6090                 |   addq    %r9,%rax    #adds ls->val to rax
+0x096:                      | done:
+0x096: b09f                 |   popq    %r9
+0x098: b03f                 |   popq    %rbx
+0x09a: 90                   |   ret
+                            | 
+                            | 
+                            | 
+0x190:                      | .pos 400
+0x190:                      | Stack:

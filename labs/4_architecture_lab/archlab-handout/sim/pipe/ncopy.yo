@@ -1,0 +1,52 @@
+                            | # Benjamin Bergeson
+                            | # benbball
+                            | 
+                            | # 1. Moved constants 8 and 1 into separate registers so they don't have to be moved into r10 every loop.
+                            | # 2. Moved order of instructions so the registers don't have to wait for values to be valid.
+                            | # 3. Changed the initial check in the loop header to conditional jump to the Loop, which should be the default in almost all cases.
+                            | 
+                            | #/* $begin ncopy-ys */
+                            | ##################################################################
+                            | # ncopy.ys - Copy a src block of len words to dst.
+                            | # Return the number of positive words (>0) contained in src.
+                            | #
+                            | # Include your name and ID here.
+                            | #
+                            | # Describe how and why you modified the baseline code.
+                            | #
+                            | ##################################################################
+                            | # Do not modify this portion
+                            | # Function prologue.
+                            | # %rdi = src, %rsi = dst, %rdx = len
+0x000:                      | ncopy:
+                            | 
+                            | ##################################################################
+                            | # You can modify this portion
+                            | # Loop header
+0x000: 6300                 |   xorq    %rax,%rax		# count = 0;
+0x002: 6222                 |   andq    %rdx,%rdx		# len <= 0?
+0x004: 30f90100000000000000 |   irmovq  $1,%r9      # constant 1
+0x00e: 30f80800000000000000 |   irmovq  $8,%r8      # constant 8
+0x018: 762a00000000000000   |   jg      Loop
+0x021: 705c00000000000000   | 	jmp     Done		    # if so, goto Done:
+0x02a:                      | Loop:
+0x02a: 50a70000000000000000 |   mrmovq  (%rdi), %r10	# read val from src...
+0x034: 6192                 |   subq    %r9, %rdx		  # len--
+0x036: 6087                 |   addq    %r8, %rdi		  # src++
+0x038: 40a60000000000000000 | 	rmmovq  %r10, (%rsi)	# ...and store it to dst
+0x042: 6086                 | 	addq    %r8, %rsi		  # dst++
+0x044: 62aa                 | 	andq    %r10, %r10		# val <= 0?
+0x046: 715100000000000000   | 	jle     Npos		      # if so, goto Npos:
+0x04f: 6090                 |   addq    %r9, %rax		  # count++
+0x051:                      | Npos:
+0x051: 6222                 | 	andq    %rdx,%rdx		# len > 0?
+0x053: 762a00000000000000   | 	jg      Loop			  # if so, goto Loop:
+                            | ##################################################################
+                            | # Do not modify the following section of code
+                            | # Function epilogue.
+0x05c:                      | Done:
+0x05c: 90                   | 	ret
+                            | ##################################################################
+                            | # Keep the following label at the end of your function
+0x05d:                      | End:
+                            | #/* $end ncopy-ys */

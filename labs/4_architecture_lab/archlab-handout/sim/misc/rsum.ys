@@ -1,0 +1,45 @@
+#Benjamin Bergeson
+#benbball
+
+.pos 0
+  irmovq Stack,%rsp
+  rrmovq %rsp,%rbp
+  irmovq  $8,%r8      #Constant 8
+  irmovq ele1,%rdi
+  call rsum_list
+  halt
+
+# Sample linked list
+.align 8
+ele1:
+  .quad 0x00a
+  .quad ele2
+ele2:
+  .quad 0x0b0
+  .quad ele3
+ele3:
+  .quad 0xc00
+  .quad 0
+
+rsum_list:
+  pushq   %rbx
+  pushq   %r9
+  rrmovq  %rdi,%rbx   #move ls to rbx
+  xorq    %rax,%rax   #val = 0
+  rrmovq  %rdi,%r9
+  andq    %r9,%r9     #check ls is valid
+  je      done        #if ls is not valid
+  addq    %r8,%r9    #rdi gets the address of ls->next
+  mrmovq  (%r9),%rdi #rdi gets the value of ls->next
+  call    rsum_list
+  mrmovq  (%rbx),%r9  #r9 gets the value of ls->val
+  addq    %r9,%rax    #adds ls->val to rax
+done:
+  popq    %r9
+  popq    %rbx
+  ret
+
+
+
+.pos 400
+Stack:

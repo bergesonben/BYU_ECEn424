@@ -1,0 +1,40 @@
+# Benjamin Bergeson
+# benbball
+
+.pos 0
+  irmovq Stack,%rsp
+  rrmovq %rsp,%rbp
+  irmovq ele1,%rdi
+  call sum_list
+  halt
+
+# Sample linked list
+.align 8
+ele1:
+  .quad 0x00a
+  .quad ele2
+ele2:
+  .quad 0x0b0
+  .quad ele3
+ele3:
+  .quad 0xc00
+  .quad 0
+
+sum_list:
+  irmovq  $8,%r8        #Constant 8
+  rrmovq  %rdi,%r10     #move ls to r10
+  xorq    %rax,%rax     #val = 0
+  andq    %r10,%r10     #check ls is valid
+  jmp     test
+loop:
+  mrmovq  (%r10),%r9    #get ls->val
+  addq    %r9,%rax      #val += ls->val
+  addq    %r8,%r10      #get ls->next
+  mrmovq  (%r10),%r10   #ls = ls->next
+  andq    %r10,%r10
+test:
+  jne     loop          #if ls is valid jump to loop
+  ret
+
+.pos 200
+Stack:
