@@ -1,4 +1,2 @@
 # BYU_ECEn424
-Professor: James Archibald
-Semester: Winter 2017
-Textbook: Computer Systems: A Programmer's perspective
+Professor: James Archibald\nSemester: Winter 2017\nTextbook: Computer Systems: A Programmer's perspective
